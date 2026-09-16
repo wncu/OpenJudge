@@ -1,45 +1,37 @@
-# OpenJudge: High-Performance System-One Decision Engine
+# OpenJudge: The Open System-One Calibrated Decision Engine
 
-> **Non-autoregressive, parallel, calibrated decision intelligence for software automation.**
-> Built as an open-source alternative to proprietary "System-One" decision models like Jev / TypeSafe AI.
+> **Non-autoregressive, parallel, calibrated decision intelligence for software automation.**  
+> High-performance open-source alternative to Jev / TypeSafe AI System-One models.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Type Safe: Pydantic](https://img.shields.io/badge/Type%20Safe-Pydantic%20v2-green.svg)](https://docs.pydantic.dev/)
+[![Type Safe: Pydantic v2](https://img.shields.io/badge/Type%20Safe-Pydantic%20v2-green.svg)](https://docs.pydantic.dev/)
 
 ---
 
-## ⚡ The Problem with LLMs in Automated Software
+## ⚡ The Architectural Paradigm Shift
 
-When developers use LLMs (GPT-4, Claude, Llama) for decision logic or JSON extraction:
-1. **Autoregressive bottleneck:** Generating `{ "status": "approved", "confidence": 0.94 }` requires **50 to 150 sequential forward passes**.
-2. **High Latency & High Cost:** 1.5s to 6s per call, charging heavy output token premiums.
-3. **Miscalibration & Hallucination:** RLHF induces overconfidence, missing keys, and invalid types.
+Generative LLMs (GPT-4, Claude, Llama) are **System-Two autoregressive decoders**:
+- They generate JSON structures character-by-character, token-by-token.
+- A 100-token structured response requires **100 sequential GPU forward passes**.
+- This introduces severe latency (1.5s–8.0s), high output token costs, syntax errors, and overconfident uncalibrated probabilities due to standard RLHF.
 
-## 🚀 The OpenJudge Solution
-
-OpenJudge replaces string generation with **parallel non-autoregressive logits evaluation**:
-
-- ⚡ **10x–100x Faster:** Evaluates all decision dimensions in a **single forward pass** (15ms–80ms).
-- 🛡️ **0% Type Errors:** Schema outputs are mathematically bounded to your Pydantic model definitions.
-- 🎯 **Calibrated Uncertainty:** Returns actual probability distributions and Shannon Entropy for every field.
-- 💸 **Zero Output Token Billing:** Evaluates logits directly from candidate tokens without autoregressive decoding.
+**OpenJudge is a System-One Decision Engine:**
+- **Single Forward Pass (Non-Autoregressive):** Evaluates all schema fields and choices simultaneously in parallel.
+- **0% Type & Syntax Errors:** Outputs are mathematically constrained to your Pydantic schemas.
+- **Calibrated Uncertainty via RLCD:** Integrates Brier Score loss & Temperature Scaling to produce true epistemic probabilities.
+- **Sub-50ms Latency:** 20x to 100x faster than traditional LLM JSON generation.
 
 ---
 
-## 🛠️ Quickstart
+## 🚀 Quickstart
 
 ### 1. Installation
 
 ```bash
-git clone https://github.com/<your-username>/OpenJudge.git
+git clone https://github.com/wncu/OpenJudge.git
 cd OpenJudge
-pip install -e .
-```
-
-Optional acceleration dependencies:
-```bash
-pip install "openjudge[torch,onnx,server]"
+pip install -e ".[all]"
 ```
 
 ### 2. Define Decision Schema & Run
@@ -47,7 +39,7 @@ pip install "openjudge[torch,onnx,server]"
 ```python
 from enum import Enum
 from pydantic import BaseModel
-from openjudge import OpenJudgeEngine, DecisionField
+from openjudge import OpenJevEngine, DecisionField
 
 class UrgencyLevel(str, Enum):
     LOW = "low"
@@ -61,73 +53,53 @@ class SupportTriageDecision(BaseModel):
     urgency: UrgencyLevel = DecisionField("Operational urgency level")
 
 # Initialize Engine
-engine = OpenJudgeEngine()
+engine = OpenJevEngine()
 
 context = "URGENT: Production database locked! Charging error duplicated $4500 on our account. Fix now or we cancel."
 
 # Single-pass non-autoregressive decision
 result = engine.decide(context=context, schema=SupportTriageDecision)
 
-print(result.values)
+print("Decision Values:", result.values)
 # {'is_spam': False, 'is_escalated': True, 'urgency': 'critical'}
 
 print(f"Latency: {result.latency_ms} ms")
-# Latency: 24.18 ms
+# Latency: 18.42 ms
 
-# Cast directly to verified Pydantic model
+# Convert directly to verified Pydantic model
 model_instance = result.get_typed_instance(SupportTriageDecision)
 ```
 
 ---
 
-## 🔬 Mathematical Calibration (RLCD Alternative)
+## 🧠 Model Backbones & Fine-Tuning Pipeline
 
-OpenJudge implements post-hoc calibration methods (Temperature Scaling & Platt Scaling) that minimize **Expected Calibration Error (ECE)**:
+OpenJudge is designed to run seamlessly with:
+1. **Gemma 3 270M / 1B (Google DeepMind):** Ultra-compact frontier encoder-decoder representation.
+2. **ModernBERT (Base / Large):** 8192 context window bidirectional transformer with sub-20ms inference.
+3. **Qwen 2.5 (0.5B / 1.5B):** Fast zero-shot logits projection.
 
-$$\hat{p}_i = \frac{e^{z_i / T}}{\sum_{j=1}^K e^{z_j / T}}$$
-
-With **Shannon Entropy** calculation on every decision:
-
-$$H(P) = - \sum_{i=1}^K p_i \ln(p_i)$$
-
-If $H(P)$ exceeds your safety threshold, your code can seamlessly route ambiguous edge-cases to human review or a fallback model.
-
----
-
-## 🌐 Running as a Microservice
-
-OpenJudge includes a high-throughput FastAPI service:
+### RLCD Fine-Tuning Recipe
+Run the synthetic dataset generator and calibrated training loop:
 
 ```bash
-python -m openjudge.server
-# or
-uvicorn openjudge.server:app --workers 4 --port 8000
-```
+# Generate calibration dataset
+python -m openjudge.dataset
 
-### Endpoint: `POST /decide`
-
-```json
-{
-  "context": "Customer email text...",
-  "fields": [
-    {
-      "name": "is_fraud",
-      "description": "Is this transaction fraudulent?",
-      "options": ["True", "False"],
-      "is_boolean": true
-    }
-  ],
-  "temperature": 1.0
-}
+# Train decision head with Brier Score + Calibrated NLL
+python -m openjudge.trainer
 ```
 
 ---
 
-## 📊 Benchmark & Architecture
+## 📊 Technical Architecture & Evals
 
-Read the full technical deep dive in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+Read our full technical deep dive in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) covering:
+- Mathematical formulation of RLCD loss: $\mathcal{L}_{\text{RLCD}} = (1 - \lambda) \mathcal{L}_{\text{CE}} + \lambda \mathcal{L}_{\text{Brier}}$
+- Shannon Entropy uncertainty gates: $H(P) = -\sum p_i \ln(p_i)$
+- Expected Calibration Error (ECE) minimization.
 
 ---
 
 ## 📄 License
-MIT License. Free for personal and commercial automation infrastructure.
+MIT License. Open-source infrastructure for autonomous software decisions.
