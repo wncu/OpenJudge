@@ -62,5 +62,5 @@ class Decision:
 
 
 def DecisionField(description: str, **kwargs):
-    """Pydantic field helper for OpenJev decision models."""
+    """Pydantic field helper for OpenJudge decision models."""
     return Field(description=description, **kwargs)

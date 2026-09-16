@@ -4,13 +4,13 @@ from typing import Any, Dict, List, Type, Optional
 import numpy as np
 from pydantic import BaseModel
 
-from openjev.types import (
+from openjudge.types import (
     Decision,
     DecisionResult,
     FieldSpec,
     ConfidenceScore,
 )
-from openjev.calibration import TemperatureScaler
+from openjudge.calibration import TemperatureScaler
 
 
 class BackendRunner:
@@ -83,9 +83,9 @@ class FastZeroShotBackend(BackendRunner):
         return logits_arr
 
 
-class OpenJevEngine:
+class OpenJudgeEngine:
     """
-    OpenJev Core Engine:
+    OpenJudge Core Engine:
     - High-throughput parallel candidate scoring
     - Single forward-pass execution (Non-autoregressive)
     - Calibrated decision probabilities

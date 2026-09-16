@@ -1,21 +1,21 @@
 """
-Server module for OpenJev: FastAPI-based high-concurrency decision microservice.
+Server module for OpenJudge: FastAPI-based high-concurrency decision microservice.
 """
 from typing import Any, Dict, List
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import uvicorn
 
-from openjev.engine import OpenJevEngine
-from openjev.types import FieldSpec, DecisionResult
+from openjudge.engine import OpenJudgeEngine
+from openjudge.types import FieldSpec, DecisionResult
 
 app = FastAPI(
-    title="OpenJev Decision Service",
+    title="OpenJudge Decision Service",
     description="High-performance, non-autoregressive decision API with calibrated probabilities.",
     version="0.1.0"
 )
 
-engine = OpenJevEngine()
+engine = OpenJudgeEngine()
 
 
 class DynamicDecisionRequest(BaseModel):
@@ -26,14 +26,14 @@ class DynamicDecisionRequest(BaseModel):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "service": "openjev", "version": "0.1.0"}
+    return {"status": "ok", "service": "openjudge", "version": "0.1.0"}
 
 
 @app.post("/decide", response_model=Dict[str, Any])
 def decide_endpoint(req: DynamicDecisionRequest):
     try:
         # Build dynamic schema representation
-        from openjev.types import ConfidenceScore
+        from openjudge.types import ConfidenceScore
         import time, numpy as np, math
         
         start = time.perf_counter()

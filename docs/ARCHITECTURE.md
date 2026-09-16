@@ -1,11 +1,11 @@
 """
-Complete Technical Specification and Architecture Document for OpenJev
+Complete Technical Specification and Architecture Document for OpenJudge
 ======================================================================
 Reverse engineering and open-source implementation of non-autoregressive,
 system-one decision infrastructure.
 """
 
-# OpenJev Technical Blueprint
+# OpenJudge Technical Blueprint
 
 ## 1. Executive Summary & Thesis
 Autoregressive Large Language Models (LLMs) suffer from severe memory-bandwidth bottlenecks when used as decision primitives inside automated software pipelines. Generating a JSON payload token-by-token incurs:
@@ -13,7 +13,7 @@ Autoregressive Large Language Models (LLMs) suffer from severe memory-bandwidth 
 2. **Type/Schema Hallucination Risk** (syntax errors, missing keys, invalid enums).
 3. **Miscalibrated Uncertainty** (RLHF produces overconfident modes that collapse true probability mass).
 
-**OpenJev** re-engineers the decision pipeline by converting structured decision problems into **parallel non-autoregressive forward evaluations** with mathematically guaranteed type-safety and empirical probability calibration.
+**OpenJudge** re-engineers the decision pipeline by converting structured decision problems into **parallel non-autoregressive forward evaluations** with mathematically guaranteed type-safety and empirical probability calibration.
 
 ---
 
@@ -22,7 +22,7 @@ Autoregressive Large Language Models (LLMs) suffer from severe memory-bandwidth 
 ```
 +-------------------------------------------------------------+
 |                     User Application                        |
-|   (Calls OpenJev with Pydantic Schema + Context Text)       |
+|   (Calls OpenJudge with Pydantic Schema + Context Text)       |
 +-------------------------------------------------------------+
                               |
                               v
@@ -68,7 +68,7 @@ Where $T > 0$ is the learned temperature parameter optimized via Negative Log-Li
 $$\mathcal{L}_{\text{NLL}} = - \sum_{m=1}^M \log \left( \hat{p}_{y_m} \right)$$
 
 ### 3.2 Shannon Entropy for Uncertainty Thresholding
-To allow software to reliably branch between autonomous execution and human-in-the-loop review, OpenJev calculates decision entropy $H(P)$:
+To allow software to reliably branch between autonomous execution and human-in-the-loop review, OpenJudge calculates decision entropy $H(P)$:
 
 $$H(P) = - \sum_{i=1}^K p_i \ln(p_i)$$
 
@@ -79,7 +79,7 @@ $$H(P) = - \sum_{i=1}^K p_i \ln(p_i)$$
 
 ## 4. Performance Comparison Matrix
 
-| Metric | Traditional LLM (JSON Mode) | OpenJev (ONNX / ModernBERT) |
+| Metric | Traditional LLM (JSON Mode) | OpenJudge (ONNX / ModernBERT) |
 |---|---|---|
 | **Forward Passes** | N passes (50 - 200 tokens) | **1 single forward pass** |
 | **Response Latency** | 1,500ms – 6,000ms | **15ms – 80ms** |

@@ -1,4 +1,4 @@
-# OpenJev: High-Performance System-One Decision Engine
+# OpenJudge: High-Performance System-One Decision Engine
 
 > **Non-autoregressive, parallel, calibrated decision intelligence for software automation.**
 > Built as an open-source alternative to proprietary "System-One" decision models like Jev / TypeSafe AI.
@@ -16,9 +16,9 @@ When developers use LLMs (GPT-4, Claude, Llama) for decision logic or JSON extra
 2. **High Latency & High Cost:** 1.5s to 6s per call, charging heavy output token premiums.
 3. **Miscalibration & Hallucination:** RLHF induces overconfidence, missing keys, and invalid types.
 
-## 🚀 The OpenJev Solution
+## 🚀 The OpenJudge Solution
 
-OpenJev replaces string generation with **parallel non-autoregressive logits evaluation**:
+OpenJudge replaces string generation with **parallel non-autoregressive logits evaluation**:
 
 - ⚡ **10x–100x Faster:** Evaluates all decision dimensions in a **single forward pass** (15ms–80ms).
 - 🛡️ **0% Type Errors:** Schema outputs are mathematically bounded to your Pydantic model definitions.
@@ -32,14 +32,14 @@ OpenJev replaces string generation with **parallel non-autoregressive logits eva
 ### 1. Installation
 
 ```bash
-git clone https://github.com/<your-username>/OpenJev.git
-cd OpenJev
+git clone https://github.com/<your-username>/OpenJudge.git
+cd OpenJudge
 pip install -e .
 ```
 
 Optional acceleration dependencies:
 ```bash
-pip install "openjev[torch,onnx,server]"
+pip install "openjudge[torch,onnx,server]"
 ```
 
 ### 2. Define Decision Schema & Run
@@ -47,7 +47,7 @@ pip install "openjev[torch,onnx,server]"
 ```python
 from enum import Enum
 from pydantic import BaseModel
-from openjev import OpenJevEngine, DecisionField
+from openjudge import OpenJudgeEngine, DecisionField
 
 class UrgencyLevel(str, Enum):
     LOW = "low"
@@ -61,7 +61,7 @@ class SupportTriageDecision(BaseModel):
     urgency: UrgencyLevel = DecisionField("Operational urgency level")
 
 # Initialize Engine
-engine = OpenJevEngine()
+engine = OpenJudgeEngine()
 
 context = "URGENT: Production database locked! Charging error duplicated $4500 on our account. Fix now or we cancel."
 
@@ -82,7 +82,7 @@ model_instance = result.get_typed_instance(SupportTriageDecision)
 
 ## 🔬 Mathematical Calibration (RLCD Alternative)
 
-OpenJev implements post-hoc calibration methods (Temperature Scaling & Platt Scaling) that minimize **Expected Calibration Error (ECE)**:
+OpenJudge implements post-hoc calibration methods (Temperature Scaling & Platt Scaling) that minimize **Expected Calibration Error (ECE)**:
 
 $$\hat{p}_i = \frac{e^{z_i / T}}{\sum_{j=1}^K e^{z_j / T}}$$
 
@@ -96,12 +96,12 @@ If $H(P)$ exceeds your safety threshold, your code can seamlessly route ambiguou
 
 ## 🌐 Running as a Microservice
 
-OpenJev includes a high-throughput FastAPI service:
+OpenJudge includes a high-throughput FastAPI service:
 
 ```bash
-python -m openjev.server
+python -m openjudge.server
 # or
-uvicorn openjev.server:app --workers 4 --port 8000
+uvicorn openjudge.server:app --workers 4 --port 8000
 ```
 
 ### Endpoint: `POST /decide`

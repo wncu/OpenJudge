@@ -1,18 +1,18 @@
 """
-OpenJev: Open-Source System-One Decision Engine
+OpenJudge: Open-Source System-One Decision Engine
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Non-autoregressive, calibrated, type-safe decision framework for software automation.
 """
 
-from openjev.types import (
+from openjudge.types import (
     Decision,
     DecisionResult,
     FieldSpec,
     ConfidenceScore,
     DecisionField,
 )
-from openjev.engine import OpenJevEngine
-from openjev.calibration import (
+from openjudge.engine import OpenJudgeEngine
+from openjudge.calibration import (
     TemperatureScaler,
     PlattScaler,
     ExpectedCalibrationError,
@@ -25,7 +25,7 @@ __all__ = [
     "FieldSpec",
     "ConfidenceScore",
     "DecisionField",
-    "OpenJevEngine",
+    "OpenJudgeEngine",
     "TemperatureScaler",
     "PlattScaler",
     "ExpectedCalibrationError",

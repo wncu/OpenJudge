@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel
-from openjev import OpenJevEngine, DecisionField
+from openjudge import OpenJudgeEngine, DecisionField
 
 class UrgencyLevel(str, Enum):
     LOW = "low"
@@ -21,7 +21,7 @@ class TicketTriageDecision(BaseModel):
     target_department: Department = DecisionField(description="Which company department should handle this request?")
 
 def main():
-    engine = OpenJevEngine()
+    engine = OpenJudgeEngine()
     
     context = (
         "Subject: URGENT: Production database locked and billing was charged twice!\n"
