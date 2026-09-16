@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openjev"
+version = "0.1.0"
+description = "High-performance, non-autoregressive decision engine for type-safe, calibrated probabilistic software decisions."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "OpenJev Contributors" }
+]
+keywords = ["ai", "decision-engine", "system-one", "calibration", "fast-inference", "type-safe", "pydantic", "onnx"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "pydantic>=2.0.0",
+    "numpy>=1.22.0",
+    "typing-extensions>=4.5.0",
+]
+
+[project.optional-dependencies]
+torch = ["torch>=2.1.0", "transformers>=4.40.0", "accelerate"]
+onnx = ["onnxruntime>=1.16.0", "transformers>=4.40.0"]
+server = ["fastapi>=0.110.0", "uvicorn>=0.28.0"]
+all = ["openjev[torch,onnx,server]"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["openjev*"]
